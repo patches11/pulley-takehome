@@ -57,4 +57,9 @@ Good luck!
 ### Javascript Tests
 
 * Javascript test 'should return search results for "romeo, wherefore art thou"' fixed by previous Go changes
-* 
+* Javascript test 'should load more results for "horse" when clicking "Load More"' fixed by using new page query param in go endpoint, and implementing tracking of current page and search
+
+### Other notes
+
+* Added a couple more Go tests to check my error handling conditions on the page param
+* Given the basic nature of the js code, I tried to stay in line with that when handling the "Load More" button, I think the implementation makes sense from a user perspective but could probably use some polishing.

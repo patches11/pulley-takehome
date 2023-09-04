@@ -119,3 +119,67 @@ func TestSearchDrunk(t *testing.T) {
 		t.Errorf("expected 20 results for query: %s, got %d", query, len(results))
 	}
 }
+
+func TestHandlesInvalidPages(t *testing.T) {
+	searcher := Searcher{}
+	err := searcher.Load("completeworks.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	query := "drunk"
+	req, err := http.NewRequest("GET", "/search?q="+query+"&page=-1", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(handleSearch(searcher))
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
+
+	var results []string
+	err = json.Unmarshal(rr.Body.Bytes(), &results)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(results) != 20 {
+		t.Errorf("expected 20 results for query: %s, got %d", query, len(results))
+	}
+}
+
+func TestHandlesPagePastResultLength(t *testing.T) {
+	searcher := Searcher{}
+	err := searcher.Load("completeworks.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	query := "drunk"
+	req, err := http.NewRequest("GET", "/search?q="+query+"&page=7", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(handleSearch(searcher))
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
+
+	var results []string
+	err = json.Unmarshal(rr.Body.Bytes(), &results)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(results) != 0 {
+		t.Errorf("expected 0 results for query: %s, got %d", query, len(results))
+	}
+}

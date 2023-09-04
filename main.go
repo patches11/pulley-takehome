@@ -52,7 +52,7 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 		}
 		pageStr := r.URL.Query().Get("page")
 		page, pageErr := strconv.Atoi(pageStr)
-		if pageErr != nil {
+		if pageErr != nil || page < 1 {
 			page = 1
 		}
 		results := searcher.Search(query[0], page)
