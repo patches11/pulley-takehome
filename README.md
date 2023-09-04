@@ -45,3 +45,10 @@ make test
 ```
 
 Good luck!
+
+
+## Patrick Takehome Notes
+
+###
+
+* Fix case insensitive test case by changing both the data fed into the search index and the query to lower case.
