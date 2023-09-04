@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -49,7 +50,12 @@ func handleSearch(searcher Searcher) func(w http.ResponseWriter, r *http.Request
 			w.Write([]byte("missing search query in URL params"))
 			return
 		}
-		results := searcher.Search(query[0])
+		pageStr := r.URL.Query().Get("page")
+		page, pageErr := strconv.Atoi(pageStr)
+		if pageErr != nil {
+			page = 1
+		}
+		results := searcher.Search(query[0], page)
 		buf := &bytes.Buffer{}
 		enc := json.NewEncoder(buf)
 		err := enc.Encode(results)
@@ -73,10 +79,20 @@ func (s *Searcher) Load(filename string) error {
 	return nil
 }
 
-func (s *Searcher) Search(query string) []string {
+func min(a, b int) int {
+    if a < b {
+        return a
+    }
+    return b
+}
+
+func (s *Searcher) Search(query string, page int) []string {
 	idxs := s.SuffixArray.Lookup([]byte(strings.ToLower(query)), -1)
+	start := 20*(page-1)
+	end := 20*page
+	pageIndexes := idxs[min(start, len(idxs)):min(end, len(idxs))]
 	results := []string{}
-	for _, idx := range idxs {
+	for _, idx := range pageIndexes {
 		results = append(results, s.CompleteWorks[idx-250:idx+250])
 	}
 	return results

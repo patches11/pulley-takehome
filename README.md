@@ -49,6 +49,12 @@ Good luck!
 
 ## Patrick Takehome Notes
 
-###
+### Go Tests
 
 * Fix case insensitive test case by changing both the data fed into the search index and the query to lower case.
+* Fix test TestSearchDrunk by changing the code to return 20 results at a time and add a page query param, this appears to be the expected behavior.
+
+### Javascript Tests
+
+* Javascript test 'should return search results for "romeo, wherefore art thou"' fixed by previous Go changes
+* 
