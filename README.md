@@ -52,12 +52,18 @@ Good luck!
 ### Go Tests
 
 * Fix case insensitive test case by changing both the data fed into the search index and the query to lower case.
+  * Seems like SuffixArray also supports a regex based search via FindAllIndex, that might be the better solution if we wanted to support both case sensitive and case-insensitive search, or more advanced search functions, but I kept it simple since it seemed like we want all searches to be case-insensitive
 * Fix test TestSearchDrunk by changing the code to return 20 results at a time and add a page query param, this appears to be the expected behavior.
+  * pages start at 1 rather than 0 to keep in line with what users would expect to see
+  * page size fixed at 20
+  * invalid pages such as -1 just return the first page of results, higher pages just return empty. I didn't implement any envelope to give more info such as count etc.
 
 ### Javascript Tests
 
 * Javascript test 'should return search results for "romeo, wherefore art thou"' fixed by previous Go changes
+  * It seems like this was intentional this would be fixed by the Go code change
 * Javascript test 'should load more results for "horse" when clicking "Load More"' fixed by using new page query param in go endpoint, and implementing tracking of current page and search
+  * Kept the state inside the Controller singleton, I think that is a reasonable approach here
 
 ### Other notes
 
