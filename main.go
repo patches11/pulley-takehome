@@ -80,16 +80,16 @@ func (s *Searcher) Load(filename string) error {
 }
 
 func min(a, b int) int {
-    if a < b {
-        return a
-    }
-    return b
+	if a < b {
+		return a
+	}
+	return b
 }
 
 func (s *Searcher) Search(query string, page int) []string {
 	idxs := s.SuffixArray.Lookup([]byte(strings.ToLower(query)), -1)
-	start := 20*(page-1)
-	end := 20*page
+	start := 20 * (page - 1)
+	end := 20 * page
 	pageIndexes := idxs[min(start, len(idxs)):min(end, len(idxs))]
 	results := []string{}
 	for _, idx := range pageIndexes {

@@ -1,37 +1,51 @@
 const Controller = {
-  lastSearch: undefined,
+  lastSearch: "",
   page: 1,
 
   search: (ev) => {
     ev.preventDefault();
     const form = document.getElementById("form");
     const data = Object.fromEntries(new FormData(form));
-    Controller.clearTable()
-    Controller.paginatedSearch(data.query, 1)
-    Controller.lastSearch = data.query
+    const query = data.query
+    Controller.resetResults(query)
+    Controller.paginatedSearch(query, 1)
+    Controller.lastSearch = query
     Controller.page = 1
   },
 
-  clearTable: () => {
+  resetResults: (search) => {
     const table = document.getElementById("table-body");
     table.innerHTML = ""
+    const header = document.getElementById("results-header");
+    header.innerHTML = `<strong>Search Results For:</strong> ${search}`
+    const noResults = document.getElementById("maybe-no-results");
+    noResults.innerHTML = ""
   },
 
   paginatedSearch: (query, page) => {
-    fetch(`/search?q=${query}&page=${page}`).then((response) => {
-      response.json().then((results) => {
-        Controller.updateTable(results);
+    if (query.length > 0) {
+      fetch(`/search?q=${query}&page=${page}`).then((response) => {
+        response.json().then((results) => {
+          Controller.updateTable(results);
+        });
       });
-    });
+    } else {
+      Controller.updateTable([])
+    }
   },
 
   updateTable: (results) => {
-    const table = document.getElementById("table-body");
-    const newRows = [];
-    for (let result of results) {
-      newRows.push(`<tr><td>${result}</td></tr>`);
+    if (results.length == 0) {
+      const noResults = document.getElementById("maybe-no-results");
+      noResults.innerHTML = "<strong>No Results Returned</strong>"
+    } else {
+      const table = document.getElementById("table-body");
+      const newRows = [];
+      for (let result of results) {
+        newRows.push(`<tr><td>${result}</td></tr>`);
+      }
+      table.innerHTML = table.innerHTML + newRows.join("\n");
     }
-    table.innerHTML = table.innerHTML + newRows.join("\n");
   },
 
   loadMore: () => {
